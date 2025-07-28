@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.14)
 project(ChronoPath)
 
@@ -12,7 +11,6 @@ FetchContent_Declare(
     GIT_TAG 1.10.5
 )
 
-# Protobuf & GTFS Bindings: 
 find_package(Protobuf REQUIRED)
 
 FetchContent_Declare(
@@ -26,11 +24,14 @@ FetchContent_MakeAvailable(cpr gtfs-realtime-bindings)
 set(GTFS_REALTIME_PROTO ${gtfs-realtime-bindings_SOURCE_DIR}/gtfs-realtime.proto)
 set(GTFS_REALTIME_SRC ${CMAKE_CURRENT_BINARY_DIR}/gtfs-realtime.pb.cc)
 set(GTFS_REALTIME_HDR ${CMAKE_CURRENT_BINARY_DIR}/gtfs-realtime.pb.h)
+
 add_custom_command(
     OUTPUT ${GTFS_REALTIME_SRC} ${GTFS_REALTIME_HDR}
     COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} --cpp_out=${CMAKE_CURRENT_BINARY_DIR} -I${gtfs-realtime-bindings_SOURCE_DIR} ${GTFS_REALTIME_PROTO}
     DEPENDS ${GTFS_REALTIME_PROTO}
+    COMMENT "Generating GTFS-Realtime protobuf files"
 )
+
 add_library(gtfs_realtime_proto ${GTFS_REALTIME_SRC} ${GTFS_REALTIME_HDR})
 target_link_libraries(gtfs_realtime_proto PUBLIC ${PROTOBUF_LIBRARY})
 target_include_directories(gtfs_realtime_proto PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
@@ -38,14 +39,15 @@ target_include_directories(gtfs_realtime_proto PUBLIC ${CMAKE_CURRENT_BINARY_DIR
 
 add_executable(chronopath main.cpp)
 
-target_link_libraries(chronopath PRIVATE
-    cpr::cpr              # For HTTP requests
-    gtfs_realtime_proto   # For parsing GTFS-Realtime
-)
-
 target_include_directories(chronopath PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_link_libraries(chronopath PRIVATE
+    cpr::cpr
+    gtfs_realtime_proto
 )
 
 target_compile_options(chronopath PRIVATE -O2 -Wall)
