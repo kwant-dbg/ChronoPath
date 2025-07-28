@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <queue>
@@ -12,7 +13,6 @@ struct State {
     int arr_time;
     std::string stop_id;
 
-    // so the priority queue knows to sort by earliest time
     bool operator>(const State& other) const {
         return arr_time > other.arr_time;
     }
@@ -28,19 +28,14 @@ public:
         const std::unordered_map<std::string, int>& delays,
         Visualizer* viz = nullptr) {
 
-        // keeps track of the earliest arrival time we've found for each stop
         std::unordered_map<std::string, int> best_time;
-        for (const auto& p : graph.stops) {
-            best_time[p.first] = std::numeric_limits<int>::max();
+        for (const auto& [stop_id, stop] : graph.stops) {
+            best_time[stop_id] = std::numeric_limits<int>::max();
         }
 
-        // so we can backtrack and build the final path
         std::unordered_map<std::string, Ride> prev_ride;
-
-        // pq to make sure we always check the stop with the earliest arrival time next
         std::priority_queue<State, std::vector<State>, std::greater<State>> pq;
 
-        // setting up the start point
         best_time[start_stop] = leave_at;
         pq.push({leave_at, start_stop});
         if (viz) viz->update(start_stop, 'S', Ansi::GREEN);
@@ -49,83 +44,62 @@ public:
             State curr = pq.top();
             pq.pop();
 
-            // if we've already found a quicker way here just skip it
             if (curr.arr_time > best_time[curr.stop_id]) {
                 continue;
             }
-            
-            if (viz && curr.stop_id != start_stop && curr.stop_id != end_stop) {
-                viz->update(curr.stop_id, 'o', Ansi::YELLOW);
-            }
 
-            // optimization if we hit the destination we're done
             if (curr.stop_id == end_stop) {
                 if(viz) viz->update(end_stop, 'E', Ansi::RED);
                 break;
             }
+            
+            if (viz && curr.stop_id != start_stop) {
+                viz->update(curr.stop_id, 'o', Ansi::YELLOW);
+            }
 
-            // now check all the rides from the current stop
-            if (graph.adj.count(curr.stop_id)) {
-                const auto& rides = graph.adj.at(curr.stop_id);
-                
-                auto it = std::lower_bound(rides.begin(), rides.end(), curr.arr_time,
-                   [&](const Ride& ride, int time) {
-                        if (ride.trip_id.empty()) return false;
-                        int dep = ride.dep_time;
-                        if (delays.count(ride.trip_id)) {
-                            dep += delays.at(ride.trip_id);
-                        }
-                        return dep < time;
-                    });
+            if (!graph.adj_list.count(curr.stop_id)) {
+                continue;
+            }
 
-                for (auto ride_it = it; ride_it!= rides.end(); ++ride_it) {
-                    auto ride = *ride_it;
-                    
-                    if (!ride.trip_id.empty()) {
-                        
-                        if (delays.count(ride.trip_id)) {
-                            int delay = delays.at(ride.trip_id);
-                            ride.dep_time += delay;
-                            ride.arr_time += delay;
-                        }
+            const auto& rides = graph.adj_list.at(curr.stop_id);
+            for (const auto& ride : rides) {
+                if (!ride.trip_id.empty()) { // Transit ride
+                    int effective_dep_time = ride.dep_time;
+                    int effective_arr_time = ride.arr_time;
 
-                        // gotta make sure we don't miss the bus lol
-                        if (ride.dep_time >= curr.arr_time) {
-                            if (ride.arr_time < best_time[ride.to]) {
-                                best_time[ride.to] = ride.arr_time;
-                                prev_ride[ride.to] = ride;
-                                pq.push({ride.arr_time, ride.to});
-                            }
-                        }
+                    if (delays.count(ride.trip_id)) {
+                        int delay = delays.at(ride.trip_id);
+                        effective_dep_time += delay;
+                        effective_arr_time += delay;
                     }
-                }
-                
-                // now deal with walking
-                for (const auto& ride : rides) {
-                    if (ride.trip_id.empty()) { // yup its a walk
-                        int next_arr = curr.arr_time + ride.arr_time;
-                        if (next_arr < best_time[ride.to]) {
-                            best_time[ride.to] = next_arr;
-                            Ride walk = {ride.from, ride.to, curr.arr_time, next_arr, ""};
-                            prev_ride[ride.to] = walk;
-                            pq.push({next_arr, ride.to});
-                        }
+
+                    if (effective_dep_time >= curr.arr_time && effective_arr_time < best_time[ride.to_stop]) {
+                        best_time[ride.to_stop] = effective_arr_time;
+                        prev_ride[ride.to_stop] = {ride.from_stop, ride.to_stop, effective_dep_time, effective_arr_time, ride.trip_id};
+                        pq.push({effective_arr_time, ride.to_stop});
+                    }
+                } else { // Walking transfer
+                    int arrival_if_walking = curr.arr_time + ride.arr_time; // arr_time is duration for walks
+                    if (arrival_if_walking < best_time[ride.to_stop]) {
+                        best_time[ride.to_stop] = arrival_if_walking;
+                        prev_ride[ride.to_stop] = {ride.from_stop, ride.to_stop, curr.arr_time, arrival_if_walking, ""};
+                        pq.push({arrival_if_walking, ride.to_stop});
                     }
                 }
             }
         }
 
-        std::vector<Ride> path;
         if (best_time[end_stop] == std::numeric_limits<int>::max()) {
-            return path; // rip no path found
+            return {}; // No path found
         }
 
+        std::vector<Ride> path;
         std::string curr_stop = end_stop;
         while (prev_ride.count(curr_stop)) {
             const auto& ride = prev_ride.at(curr_stop);
             path.push_back(ride);
-            if (viz && ride.from != start_stop) viz->update(ride.from, '*', Ansi::CYAN);
-            curr_stop = ride.from;
+            if (viz && ride.from_stop != start_stop) viz->update(ride.from_stop, '*', Ansi::CYAN);
+            curr_stop = ride.from_stop;
         }
         std::reverse(path.begin(), path.end());
         
