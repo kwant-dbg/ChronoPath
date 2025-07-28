@@ -5,6 +5,8 @@
 #include "data_model.h"
 #include "router.h"
 #include "utils.h"
+#include "visualizer.h"
+
 
 // find stop id by partial name match
 std::string find_stop_id(const TransitMap& graph, const std::string& name) {
