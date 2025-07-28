@@ -1,14 +1,10 @@
 #pragma once
-// all the structs and classes for the transit graph
-
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include "just_gtfs/just_gtfs.h"
 #include "utils.h"
 
-// one leg of a journey
-// basically an edge in our graph
 struct Ride {
     std::string from_stop;
     std::string to_stop;
@@ -17,7 +13,6 @@ struct Ride {
     std::string trip_id; // empty if its a walk
 };
 
-// the whole transit map
 class TransitMap {
 public:
     std::unordered_map<std::string, std::vector<Ride>> adj_list;
@@ -57,7 +52,6 @@ public:
                 return a.stop_sequence < b.stop_sequence;
             });
 
-            // make connections between stops
             for (size_t i = 0; i + 1 < pair.second.size(); ++i) {
                 const auto& from = pair.second[i];
                 const auto& to = pair.second[i+1];
@@ -84,7 +78,6 @@ public:
     }
 
 private:
-    // adds walks between close stops
     void add_walks() {
         const double walk_speed = 1.4; // mps
         const double max_walk_dist = 500.0; // 500m
