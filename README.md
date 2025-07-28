@@ -42,17 +42,23 @@ Real-world transit data is often inconsistent or unavailable. ChronoPath is desi
 
 ```
 chronopath/
-├── CMakeLists.txt
-├── main.cpp
+│
+├── CMakeLists.txt          
+├── main.cpp              
+│
 ├── include/
-│   └── just_gtfs.h
+│   └── just_gtfs.h         # External dependency
+│
 ├── src/
 │   ├── data_model.h
+│   ├── realtime_manager.h
 │   ├── router.h
 │   ├── utils.h
 │   └── visualizer.h
+│
 ├── data/
-│   └── gtfs_patiala/  # Example dataset
+│   └── gtfs_patiala/       # GTFS data files
+│
 └── build/
 ```
 
