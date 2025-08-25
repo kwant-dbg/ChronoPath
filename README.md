@@ -1,124 +1,125 @@
-# ChronoPath: A C++ Temporal Pathfinding Engine
+# Temporal Pathfinder 🗺️
 
-ChronoPath is a command-line application written in modern C++ that computes the optimal journey between two points in a city's public transit system. It solves the **Earliest-Arrival Path Problem** on time-dependent graphs, where classic shortest-path algorithms fall short. This project showcases advanced graph algorithms applied to real-world data, emphasizing performance and clean architectural design.
+[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
-
-## ⚡ Key Features
-
-* **Advanced Temporal Pathfinding**
-
-  * Implements a time-aware Dijkstra's algorithm (Profile Search) to handle networks with time-varying edge availability.
-
-* **Multi-Modal Routing**
-
-  * Supports walking transfers between nearby stops for practical journey computation.
-
-* **Live ASCII Visualization**
-
-  * An optional `--visualize` mode renders the algorithm's execution in real-time as an ASCII map in your terminal.
-
-* **High-Performance Modern C++**
-
-  * Built with C++17, using efficient data structures and clean, modular code architecture.
+An efficient public transit journey planner for **Delhi, India**, built with **C++** and powered by the **RAPTOR algorithm**.  
+This project provides a **web-based interface** to find the fastest routes at specific times.
 
 ---
 
-## 🔮 The Data Challenge
+## 🌟 Key Features
 
-Real-world transit data is often inconsistent or unavailable. ChronoPath is designed to handle any valid **GTFS** (General Transit Feed Specification) feed, whether it's a public data source or a custom-built dataset.
+- ⚡ **Fast & Efficient:** Utilizes the modern **RAPTOR** algorithm for rapid route calculations.  
+- 🕒 **Time-Dependent:** Finds the best route based on your specified departure time.  
+- 🌐 **Web Interface:** A clean, simple web UI for entering your start, destination, and time.  
+- 📊 **Real-World Data:** Powered by the official GTFS transit data for Delhi.  
+- 🏆 **Optimal Journeys:** Provides multiple journey options, prioritizing arrival time and minimizing transfers.  
 
 ---
 
-## 📅 Prerequisites
+## 💻 Live Demo & Screenshots
 
-* A C++17-compliant compiler (GCC 7+, Clang 5+)
-* CMake 3.10+
-* Terminal with ANSI escape code support (most Linux/macOS terminals, or Windows Terminal)
+This is how the application looks in action. The interface allows users to input their journey details, and the map visualizes the resulting route options.
+
+| Web Interface | Server Log |
+|---------------|------------|
+| ![UI Screenshot](img/Screenshot%202025-08-20%20005027.png) | ![Log Screenshot](img/Screenshot%202025-08-20%20005141.png) |
+
+
+---
+
+## 🧠 The Algorithm: RAPTOR
+
+The core of this project is the **RAPTOR (Round-bAsed Public Transit Optimized Router)** algorithm.  
+
+Unlike classic graph-based algorithms (like Dijkstra's), RAPTOR is **tailored for public transit systems**.  
+
+- Works in **rounds**: each round `k` finds the earliest arrival times at stops with at most `k-1` transfers.  
+- Designed for **large-scale transit networks**.  
+- Prioritizes **realistic and optimal journeys**.  
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get a local copy up and running.
+
+### Prerequisites
+- A C++ compiler that supports **C++11 or newer** (e.g., GCC/g++).  
+- The **Delhi GTFS dataset**, available [here](https://mobilitydatabase.org/feeds/gtfs/mdb-1262).  
+
+### Installation & Execution
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/L0calised/TemporalPathfinder01.git
+   cd TemporalPathfinder01
+sh
+
+2. **Set up the data:**
+
+   * Create a directory named `data` in the project root.
+   * Download the GTFS files (`stops.txt`, `stop_times.txt`, `trips.txt`, etc.) and place them inside the `data` folder.
+
+3. **Compile the source code:**
+
+   ```sh
+   g++ Sources/main.cpp Sources/Raptor.cpp -o pathfinder -IHeaders -std=c++11 -pthread
+   ```
+
+4. **Run the application:**
+
+   ```sh
+   ./pathfinder
+   ```
+
+   You should see:
+
+   ```
+   Server starting on http://localhost:8080
+   ```
+
+5. **Access the web interface:**
+   Open your browser and go to 👉 **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
 ## 📁 Project Structure
 
 ```
-chronopath/
-│
-├── CMakeLists.txt          
-├── main.cpp              
-│
-├── include/
-│   └── just_gtfs.h         # External dependency
-│
-├── src/
-│   ├── data_model.h
-│   ├── realtime_manager.h
-│   ├── router.h
-│   ├── utils.h
-│   └── visualizer.h
-│
-├── data/
-│   └── gtfs_patiala/       # GTFS data files
-│
-└── build/
+TemporalPathfinder/
+├── Headers/
+│   ├── DataTypes.h     # Defines data structures (Stop, Route, etc.)
+│   ├── httplib.h       # Single-file C++ HTTP/HTTPS library
+│   └── Raptor.h        # Header for the RAPTOR algorithm
+└── Sources/
+    ├── main.cpp        # Main application entry point and web server logic
+    └── Raptor.cpp      # Implementation of the RAPTOR algorithm
 ```
 
 ---
 
-## 📀 Setup Instructions
+## 🤝 Contributing
 
-### 1. Dependencies & Data
+Contributions are what make the open-source community amazing 💡✨
+Any contributions you make are **greatly appreciated**.
 
-* **GTFS Parsing**
-
-  * Download `just_gtfs.h` (a header-only GTFS parser) from its official repository and place it in `include/`.
-
-* **Transit Data**
-
-  * **Option A: Official Feed (Recommended)**
-
-    * Download a GTFS feed (e.g., Delhi or Bengaluru) and place the `.txt` files inside a new directory like `data/gtfs_delhi/`.
-  * **Option B: Custom Patiala Feed**
-
-    * Use the sample GTFS files (stops.txt, routes.txt, etc.) provided with this project and place them in `data/gtfs_patiala/`.
-
-* **IMPORTANT**: Update the path to the dataset in `main.cpp` depending on the data you use.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## ⚙️ Build Instructions
+## 📜 License
 
-Navigate to the `build/` directory and compile using CMake:
+Distributed under the **MIT License**.
+See the [`LICENSE`](LICENSE) file for more details.
 
-```bash
-cd chronopath/build
-cmake ..
-make
 ```
 
-This will generate an executable named `chronopath` inside the `build/` directory.
-
----
-
-## 🚀 Run Instructions
-
-From the root directory, run the application using one of the modes below:
-
-### Standard Mode:
-
-```bash
-./build/chronopath
+Would you like me to also design a **nice project banner/logo** (with “Temporal Pathfinder 🗺️”) that you can put at the very top of the README? That way it will look more professional like popular repos.
 ```
 
-### Visualization Mode:
-
-```bash
-./build/chronopath --visualize
-```
-
-You'll be prompted to input:
-
-* Source stop
-* Destination stop
-* Departure time
-
----

@@ -1,5 +1,0 @@
-trip_id,arrival_time,departure_time,stop_id,stop_sequence
-T101_A,08:00:00,08:00:00,BS,1
-T101_A,08:15:00,08:15:00,TH,2
-T102_A,09:00:00,09:00:00,MT,1
-T102_A,09:10:00,09:10:00,SS,2

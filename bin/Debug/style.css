@@ -1,0 +1,136 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+.main-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.controls-panel {
+    width: 400px;
+    padding: 2rem;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    z-index: 1000; /* Keep it on top of the map */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow scrolling if content is long */
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1a73e8;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.select-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+select, input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1a73e8;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #155ab6;
+}
+
+#results-container {
+margin-top: 2rem;
+padding: 1rem;
+background-color: #f9f9f9;
+border-radius: 4px;
+}
+
+.result-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+/* Style for the map container */
+#map {
+    flex-grow: 1;
+    height: 100%;
+    background-color: #eaf0f5; /* Add this line for a light blue-gray background */
+}
+
+
+/* --- NEW: Styling for Permanent Map Labels --- */
+.map-label {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    border: none;
+    border-radius: 4px;
+    box-shadow: none; /* Remove default shadow */
+    padding: 3px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+    white-space: nowrap; /* Prevent names from wrapping to a new line */
+}
+
+/* --- NEW: Styling for Autocomplete --- */
+.autocomplete-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 9999; /* Make sure it appears above other elements */
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover, .suggestion-item.active {
+    background-color: #f0f2f5;
+}

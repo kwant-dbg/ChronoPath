@@ -1,5 +1,0 @@
-stop_id,stop_name,stop_lat,stop_lon
-BS,Bus Stand,30.3398,76.3869
-TH,Thapar University,30.3553,76.3615
-MT,Model Town,30.3214,76.4024
-SS,22 No. Phatak,30.3450,76.4050

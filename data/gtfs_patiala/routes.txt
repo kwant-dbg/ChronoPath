@@ -1,3 +1,0 @@
-route_id,agency_id,route_short_name,route_long_name,route_type
-R101,PBTC,101,Bus Stand to Thapar University,3
-R102,PBTC,102,Model Town to 22 No. Phatak,3
