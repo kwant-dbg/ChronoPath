@@ -118,8 +118,4 @@ Any contributions you make are **greatly appreciated**.
 Distributed under the **MIT License**.
 See the [`LICENSE`](LICENSE) file for more details.
 
-```
-
-Would you like me to also design a **nice project banner/logo** (with “Temporal Pathfinder 🗺️”) that you can put at the very top of the README? That way it will look more professional like popular repos.
-```
 
