@@ -1,0 +1,12 @@
+// Resource IDs are defined in resources.h
+#include "resources.h"
+
+// --- GTFS Data Files ---
+IDR_STOPS_TXT       RCDATA  "text/stops.txt"
+IDR_STOP_TIMES_TXT  RCDATA  "text/stop_times.txt"
+IDR_TRANSFERS_TXT   RCDATA  "text/transfers.txt"
+
+// --- Web Server Files ---
+IDR_INDEX_HTML      RCDATA  "text/index.html"
+IDR_STYLE_CSS       RCDATA  "text/style.css"
+IDR_SCRIPT_JS       RCDATA  "text/script.js"

@@ -42,6 +42,11 @@
 		<Unit filename="Raptor.h" />
 		<Unit filename="httplib.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="resources.h" />
+		<Unit filename="resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="robin_hood.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

@@ -98,9 +98,28 @@ TemporalPathfinder/
     └── Raptor.cpp      # Implementation of the RAPTOR algorithm
 ```
 
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community amazing 💡✨
+Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
 ## 📜 License
 
 Distributed under the **MIT License**.
 See the [`LICENSE`](LICENSE) file for more details.
 
+```
+
+Would you like me to also design a **nice project banner/logo** (with “Temporal Pathfinder 🗺️”) that you can put at the very top of the README? That way it will look more professional like popular repos.
+```
 

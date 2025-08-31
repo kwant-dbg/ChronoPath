@@ -5,12 +5,17 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <map>
+//#include <map>
 #include <algorithm>
 
 #include "httplib.h" // The web server library
 #include "DataTypes.h"
 #include "Raptor.h"
+
+#include <windows.h>      // For resource loading functions (FindResource, etc.)
+#include "resources.h"    // For your resource IDs (IDR_INDEX_HTML, etc.)
+
+#include "robin_hood.h"
 
 // Helper function implementations that were previously in main.cpp
 std::ostream& operator<<(std::ostream& os, const Time& t) {
@@ -20,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, const Time& t) {
     return os;
 }
 
-std::string getStopName(int stop_id, const std::map<int, Stop>& stops) {
+std::string getStopName(int stop_id, const robin_hood::unordered_map<int, Stop>& stops) {
     auto it = stops.find(stop_id);
     return (it != stops.end()) ? it->second.name : "Unknown Stop";
 }
@@ -28,8 +33,8 @@ std::string getStopName(int stop_id, const std::map<int, Stop>& stops) {
 
 // --- NEW: Path Reconstruction Function ---
 std::vector<PathStep> reconstructPath(int start_id, int end_id, const Journey& final_journey,
-                                      const std::map<int, std::map<int, Journey>>& predecessors,
-                                      const std::map<int, Stop>& stops) {
+                                      const robin_hood::unordered_map<int, robin_hood::unordered_map<int, Journey>>& predecessors,
+                                      const robin_hood::unordered_map<int, Stop>& stops) {
     std::vector<PathStep> path;
     Journey current_journey = final_journey;
     int current_stop = end_id;
@@ -50,42 +55,82 @@ std::vector<PathStep> reconstructPath(int start_id, int end_id, const Journey& f
     return path;
 }
 
+// Helper function to load an embedded resource into a string
+std::string loadResourceAsString(int resourceID) {
+    HRSRC hRes = FindResource(NULL, MAKEINTRESOURCE(resourceID), RT_RCDATA);
+    if (hRes == NULL) {
+        return "";
+    }
+
+    HGLOBAL hResLoad = LoadResource(NULL, hRes);
+    if (hResLoad == NULL) {
+        return "";
+    }
+
+    LPVOID pResLock = LockResource(hResLoad);
+    if (pResLock == NULL) {
+        return "";
+    }
+
+    DWORD dwSize = SizeofResource(NULL, hRes);
+
+    return std::string(static_cast<char*>(pResLock), dwSize);
+}
+
+
 int main() {
     // --- 1. Load and Pre-process GTFS Data (Happens once at startup) ---
-    std::map<int, Stop> stops;
+    robin_hood::unordered_map<int, Stop> stops;
     std::vector<StopTime> stop_times;
-    std::map<int, std::vector<Transfer>> transfers_map;
-    std::map<std::string, std::vector<StopTime>> trips_map;
-    std::map<int, std::vector<std::string>> routes_serving_stop;
-
+    robin_hood::unordered_map<int, std::vector<Transfer>> transfers_map;
+    robin_hood::unordered_map<std::string, std::vector<StopTime>> trips_map;
+    robin_hood::unordered_map<int, std::vector<std::string>> routes_serving_stop;
+    robin_hood::unordered_map<std::string, robin_hood::unordered_map<int, int>> trip_stop_indices;
     // [Omitted repetitive file loading code for brevity - keep your existing loaders]
-    std::ifstream stops_file("stops.txt"); std::string line; getline(stops_file, line);
-    //while (getline(stops_file, line)) { std::stringstream ss(line); std::string field; Stop s; getline(ss, field, ','); s.id = std::stoi(field); getline(ss, field, ','); s.name = field; stops[s.id] = s; }
-    while (getline(stops_file, line)) {
+
+    // --- THIS IS THE NEW, CORRECTED BLOCK FOR YOUR main() ---
+    std::string line;
+
+    // Load stops.txt from resources
+    std::string stops_data = loadResourceAsString(IDR_STOPS_TXT);
+    std::stringstream stops_stream(stops_data);
+    getline(stops_stream, line); // Skip header line
+    while (getline(stops_stream, line)) {
+        // Your existing parsing logic for stops is perfect and needs no changes.
         std::stringstream ss(line);
         std::string stop_id_str, stop_code, stop_name, stop_lat_str, stop_lon_str;
         Stop s;
-        // Read the first 5 columns, ignoring the rest
         getline(ss, stop_id_str, ',');
         getline(ss, stop_code, ',');
         getline(ss, stop_name, ',');
         getline(ss, stop_lat_str, ',');
         getline(ss, stop_lon_str, ',');
-
         try {
             s.id = std::stoi(stop_id_str);
             s.name = stop_name;
             s.lat = std::stod(stop_lat_str);
             s.lon = std::stod(stop_lon_str);
             stops[s.id] = s;
-        } catch (const std::exception& e) {
-            // This safely skips any lines with bad data
-        }
+        } catch (const std::exception& e) {}
     }
-    std::ifstream st_file("stop_times.txt"); getline(st_file, line);
-    while (getline(st_file, line)) { std::stringstream ss(line); std::string field; StopTime st; getline(ss, field, ','); st.trip_id = field; getline(ss, field, ','); st.arrival_time = Time(field); getline(ss, field, ','); st.departure_time = Time(field); getline(ss, field, ','); st.stop_id = std::stoi(field); getline(ss, field, ','); st.stop_sequence = std::stoi(field); stop_times.push_back(st); }
-    std::ifstream tr_file("transfers.txt"); getline(tr_file, line);
-    while (getline(tr_file, line)) { std::stringstream ss(line); std::string field; Transfer t; getline(ss, field, ','); t.from_stop_id = std::stoi(field); getline(ss, field, ','); t.to_stop_id = std::stoi(field); getline(ss, field, ','); t.duration_seconds = std::stoi(field); transfers_map[t.from_stop_id].push_back(t); }
+
+    // Load stop_times.txt from resources
+    std::string st_data = loadResourceAsString(IDR_STOP_TIMES_TXT);
+    std::stringstream st_stream(st_data);
+    getline(st_stream, line); // Skip header line
+    while (getline(st_stream, line)) {
+        // Your existing parsing logic for stop_times is perfect.
+        std::stringstream ss(line); std::string field; StopTime st; getline(ss, field, ','); st.trip_id = field; getline(ss, field, ','); st.arrival_time = Time(field); getline(ss, field, ','); st.departure_time = Time(field); getline(ss, field, ','); st.stop_id = std::stoi(field); getline(ss, field, ','); st.stop_sequence = std::stoi(field); stop_times.push_back(st);
+    }
+
+    // Load transfers.txt from resources
+    std::string tr_data = loadResourceAsString(IDR_TRANSFERS_TXT);
+    std::stringstream tr_stream(tr_data);
+    getline(tr_stream, line); // Skip header line
+    while (getline(tr_stream, line)) {
+        // Your existing parsing logic for transfers is perfect.
+        std::stringstream ss(line); std::string field; Transfer t; getline(ss, field, ','); t.from_stop_id = std::stoi(field); getline(ss, field, ','); t.to_stop_id = std::stoi(field); getline(ss, field, ','); t.duration_seconds = std::stoi(field); transfers_map[t.from_stop_id].push_back(t);
+    }
 
     for (const auto& st : stop_times) {
         trips_map[st.trip_id].push_back(st);
@@ -93,14 +138,45 @@ int main() {
     }
     for (auto& pair : trips_map) { std::sort(pair.second.begin(), pair.second.end(), [](const StopTime& a, const StopTime& b) { return a.stop_sequence < b.stop_sequence; }); }
     for (auto& pair : routes_serving_stop) { std::sort(pair.second.begin(), pair.second.end()); pair.second.erase(std::unique(pair.second.begin(), pair.second.end()), pair.second.end()); }
+
+    std::cout << "Pre-calculating trip stop indices for fast lookups..." << std::endl;
+    for (const auto& pair : trips_map) {
+        const std::string& trip_id = pair.first;
+        const std::vector<StopTime>& schedule = pair.second;
+        for (size_t i = 0; i < schedule.size(); ++i) {
+            trip_stop_indices[trip_id][schedule[i].stop_id] = i;
+        }
+    }
+
     std::cout << "Data loaded and pre-processed for server." << std::endl;
 
     // --- 2. Create and Configure the Web Server ---
     httplib::Server svr;
 
-    // This tells the server to serve files from the same directory the .exe is in
-    svr.set_base_dir("./");
 
+    // REMOVE the svr.set_base_dir("./"); line completely.
+    // It is now replaced by these handlers below.
+
+    // Serve index.html for the root URL "/"
+    svr.Get("/", [](const httplib::Request&, httplib::Response& res) {
+        std::string content = loadResourceAsString(IDR_INDEX_HTML);
+        res.set_content(content, "text/html; charset=utf-8");
+    });
+
+    // Serve the CSS file
+    // --- NEW, CORRECTED CODE ---
+
+    // Serve the CSS file
+    svr.Get("/style.css", [](const httplib::Request&, httplib::Response& res) {
+        std::string content = loadResourceAsString(IDR_STYLE_CSS);
+        res.set_content(content, "text/css"); // Add the correct MIME type
+    });
+
+    // Serve the JavaScript file
+    svr.Get("/script.js", [](const httplib::Request&, httplib::Response& res) {
+        std::string content = loadResourceAsString(IDR_SCRIPT_JS);
+        res.set_content(content, "application/javascript"); // Add the correct MIME type
+    });
 
 
     // API Endpoint to get the list of all stops
@@ -143,14 +219,14 @@ int main() {
         std::cout << "--------------------------------" << std::endl;
 
         // Execute the RAPTOR algorithm
-        std::map<int, std::vector<Journey>> final_profiles;
+        robin_hood::unordered_map<int, std::vector<Journey>> final_profiles;
 
         // *** FIX 1: DECLARE the predecessors map here ***
-        std::map<int, std::map<int, Journey>> predecessors;
+        robin_hood::unordered_map<int, robin_hood::unordered_map<int, Journey>> predecessors;
 
         // *** FIX 2: PASS the predecessors map to the function ***
-        runMultiCriteriaRaptor(start_node, end_node, Time(time_str), stops, transfers_map, trips_map, routes_serving_stop, final_profiles, predecessors);
-
+        // --- THE CORRECTED CODE ---
+        runMultiCriteriaRaptor(start_node, end_node, Time(time_str), stops, transfers_map, trips_map, routes_serving_stop, trip_stop_indices, final_profiles, predecessors);
         // Format the result as a JSON string
         std::stringstream json;
         json << "{\"from\":\"" << getStopName(start_node, stops) << "\",\"to\":\"" << getStopName(end_node, stops) << "\",\"results\":[";

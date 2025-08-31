@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
+//#include <map>
 #include <set>
 #include <algorithm>
 #include "Raptor.h"
 #include "DataTypes.h"
-
+#include <unordered_map>
+#include "robin_hood.h"
 const double WALKING_SPEED_MPS = 1.4;
 const double MAX_WALK_DISTANCE_METERS = 1500;
 
@@ -25,15 +26,16 @@ void merge(std::vector<Journey>& profile, const Journey& new_journey) {
 }
 
 void runMultiCriteriaRaptor(int start_stop_id, int end_stop_id, const Time& start_time,
-                            const std::map<int, Stop>& stops,
-                            const std::map<int, std::vector<Transfer>>& transfers_map,
-                            const std::map<std::string, std::vector<StopTime>>& trips_map,
-                            const std::map<int, std::vector<std::string>>& routes_serving_stop,
-                            std::map<int, std::vector<Journey>>& final_profiles,
-                            std::map<int, std::map<int, Journey>>& predecessors) {
+                            const robin_hood::unordered_map<int, Stop>& stops,
+                            const robin_hood::unordered_map<int, std::vector<Transfer>>& transfers_map,
+                            const robin_hood::unordered_map<std::string, std::vector<StopTime>>& trips_map,
+                            const robin_hood::unordered_map<int, std::vector<std::string>>& routes_serving_stop,
+                            const robin_hood::unordered_map<std::string, robin_hood::unordered_map<int, int>>& trip_stop_indices,
+                            robin_hood::unordered_map<int, std::vector<Journey>>& final_profiles,
+                            robin_hood::unordered_map<int, robin_hood::unordered_map<int, Journey>>& predecessors) {
 
     const int MAX_TRIPS = 5;
-    std::vector<std::map<int, std::vector<Journey>>> profiles_by_round(MAX_TRIPS + 1);
+    std::vector<robin_hood::unordered_map<int, std::vector<Journey>>> profiles_by_round(MAX_TRIPS + 1);
 
     // Round 0: Initialize
     merge(profiles_by_round[0][start_stop_id], {start_time, 0, start_time, -1, "Start"});
@@ -55,18 +57,17 @@ void runMultiCriteriaRaptor(int start_stop_id, int end_stop_id, const Time& star
 
     // RAPTOR Rounds
     for (int k = 1; k <= MAX_TRIPS; ++k) {
-        std::map<int, std::vector<Journey>> reached_this_round;
+        robin_hood::unordered_map<int, std::vector<Journey>> reached_this_round;
         for (const auto& pair : profiles_by_round[k - 1]) {
             int stop_id = pair.first;
             if (routes_serving_stop.count(stop_id)) {
                 for (const auto& trip_id : routes_serving_stop.at(stop_id)) {
+
                     const auto& schedule = trips_map.at(trip_id);
                     int boarding_stop_seq = -1;
-                    for (size_t i = 0; i < schedule.size(); ++i) {
-                        if (schedule[i].stop_id == stop_id) {
-                            boarding_stop_seq = i;
-                            break;
-                        }
+                    // Instant lookup instead of a loop
+                    if (trip_stop_indices.count(trip_id) && trip_stop_indices.at(trip_id).count(stop_id)) {
+                        boarding_stop_seq = trip_stop_indices.at(trip_id).at(stop_id);
                     }
 
                     if (boarding_stop_seq != -1) {
@@ -108,7 +109,7 @@ void runMultiCriteriaRaptor(int start_stop_id, int end_stop_id, const Time& star
     }
 
     // --- NEW, EFFICIENT FINALIZATION LOGIC ---
-    std::map<int, std::vector<Journey>> temp_final_profiles;
+    robin_hood::unordered_map<int, std::vector<Journey>> temp_final_profiles;
     for (int k = 0; k <= MAX_TRIPS; ++k) {
         for (const auto& profile_pair : profiles_by_round[k]) {
             int stop_id = profile_pair.first;
