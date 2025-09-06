@@ -1,7 +1,6 @@
 # Temporal Pathfinder 🗺️
 
-[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An efficient public transit journey planner for **Delhi, India**, built with **C++** and powered by the **RAPTOR algorithm**.  
 This project provides a **web-based interface** to find the fastest routes at specific times.
