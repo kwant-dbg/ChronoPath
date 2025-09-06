@@ -7,7 +7,7 @@ This project provides a **web-based interface** to find the fastest routes at sp
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 - ⚡ **Fast & Efficient:** Utilizes the modern **RAPTOR** algorithm for rapid route calculations.  
 - 🕒 **Time-Dependent:** Finds the best route based on your specified departure time.  
@@ -96,8 +96,3 @@ TemporalPathfinder/
     ├── main.cpp        # Main application entry point and web server logic
     └── Raptor.cpp      # Implementation of the RAPTOR algorithm
 ```
-
-## 📜 License
-
-Distributed under the **MIT License**.
-See the [`LICENSE`](LICENSE) file for more details.
