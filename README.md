@@ -1,4 +1,4 @@
-# Temporal Pathfinder 🗺️
+# Temporal Pathfinder 
 
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -40,7 +40,7 @@ Unlike classic graph-based algorithms (like Dijkstra's), RAPTOR is **tailored fo
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 Follow these instructions to get a local copy up and running.
 
