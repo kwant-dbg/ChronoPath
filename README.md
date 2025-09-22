@@ -9,15 +9,15 @@ This project provides a **web-based interface** to find the fastest routes at sp
 
 ## Key Features
 
-- ⚡ **Fast & Efficient:** Utilizes the modern **RAPTOR** algorithm for rapid route calculations.  
-- 🕒 **Time-Dependent:** Finds the best route based on your specified departure time.  
-- 🌐 **Web Interface:** A clean, simple web UI for entering your start, destination, and time.  
-- 📊 **Real-World Data:** Powered by the official GTFS transit data for Delhi.  
-- 🏆 **Optimal Journeys:** Provides multiple journey options, prioritizing arrival time and minimizing transfers.  
+-  **Fast & Efficient:** Utilizes the modern **RAPTOR** algorithm for rapid route calculations.  
+-  **Time-Dependent:** Finds the best route based on your specified departure time.  
+-  **Web Interface:** A clean, simple web UI for entering your start, destination, and time.  
+-  **Real-World Data:** Powered by the official GTFS transit data for Delhi.  
+-  **Optimal Journeys:** Provides multiple journey options, prioritizing arrival time and minimizing transfers.  
 
 ---
 
-## 💻 Live Demo & Screenshots
+##  Live Demo & Screenshots
 
 This is how the application looks in action. The interface allows users to input their journey details, and the map visualizes the resulting route options.
 
@@ -28,7 +28,7 @@ This is how the application looks in action. The interface allows users to input
 
 ---
 
-## 🧠 The Algorithm: RAPTOR
+##  The Algorithm: RAPTOR
 
 The core of this project is the **RAPTOR (Round-bAsed Public Transit Optimized Router)** algorithm.  
 
@@ -80,11 +80,11 @@ sh
    ```
 
 5. **Access the web interface:**
-   Open your browser and go to 👉 **[http://localhost:8080](http://localhost:8080)**
+   Open your browser and go to  **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 TemporalPathfinder/
