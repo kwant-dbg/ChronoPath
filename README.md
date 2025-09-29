@@ -96,3 +96,4 @@ TemporalPathfinder/
     ├── main.cpp        # Main application entry point and web server logic
     └── Raptor.cpp      # Implementation of the RAPTOR algorithm
 ```
+<img width="800" height="450" alt="Raptor(2)" src="https://github.com/user-attachments/assets/cc5a5844-d792-4f74-8ba5-efacd702a576" />
