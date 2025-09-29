@@ -2,7 +2,7 @@
 
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An efficient public transit journey planner for **Delhi, India**, built with **C++** and powered by the **RAPTOR algorithm**.  
+An efficient public transit journey planner for **Delhi, India** (can be extended to any city ), built with **C++** and powered by the **RAPTOR algorithm**.  
 This project provides a **web-based interface** to find the fastest routes at specific times.
 
 ---
@@ -41,8 +41,6 @@ Unlike classic graph-based algorithms (like Dijkstra's), RAPTOR is **tailored fo
 ---
 
 ##  Getting Started
-
-Follow these instructions to get a local copy up and running.
 
 ### Prerequisites
 - A C++ compiler that supports **C++11 or newer** (e.g., GCC/g++).  
