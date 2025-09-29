@@ -1,97 +1,54 @@
-# Temporal Pathfinder 
+### ChronoPath: A C++ Transit Route Planner
 
-[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An efficient public transit journey planner for **Delhi, India** (can be extended to any city ), built with **C++** and powered by the **RAPTOR algorithm**.  
-This project provides a **web-based interface** to find the fastest routes at specific times.
+A C++ public transit journey planner using the RAPTOR algorithm for time-dependent routing on GTFS data. Exposes a lightweight web UI for querying.
 
----
-
-## Key Features
-
--  **Fast & Efficient:** Utilizes the modern **RAPTOR** algorithm for rapid route calculations.  
--  **Time-Dependent:** Finds the best route based on your specified departure time.  
--  **Web Interface:** A clean, simple web UI for entering your start, destination, and time.  
--  **Real-World Data:** Powered by the official GTFS transit data for Delhi.  
--  **Optimal Journeys:** Provides multiple journey options, prioritizing arrival time and minimizing transfers.  
+*   **Core Algorithm:** Efficient, round-based RAPTOR implementation optimized for transit networks.
+*   **Data Source:** Ingests standard GTFS data feeds.
+*   **Interface:** Lightweight C++ web server via `httplib.h`.
 
 ---
 
-##  Live Demo & Screenshots
-
-This is how the application looks in action. The interface allows users to input their journey details, and the map visualizes the resulting route options.
+### Demo
 
 | Web Interface | Server Log |
 |---------------|------------|
 | ![UI Screenshot](img/Screenshot%202025-08-20%20005027.png) | ![Log Screenshot](img/Screenshot%202025-08-20%20005141.png) |
 
+---
+
+### Quickstart
+
+**Prerequisites:** C++17 Compiler (GCC/Clang) & GTFS data.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/kwant-dbg/ChronoPath.git
+cd ChronoPath
+
+# 2. Add GTFS files (.txt) to a new `data/` directory
+
+# 3. Compile the server
+g++ Sources/main.cpp Sources/Raptor.cpp -o pathfinder -IHeaders -std=c++17 -pthread
+
+# 4. Run the server
+./pathfinder
+# Access at http://localhost:8080
+```
 
 ---
 
-##  The Algorithm: RAPTOR
-
-The core of this project is the **RAPTOR (Round-bAsed Public Transit Optimized Router)** algorithm.  
-
-Unlike classic graph-based algorithms (like Dijkstra's), RAPTOR is **tailored for public transit systems**.  
-
-- Works in **rounds**: each round `k` finds the earliest arrival times at stops with at most `k-1` transfers.  
-- Designed for **large-scale transit networks**.  
-- Prioritizes **realistic and optimal journeys**.  
-
----
-
-##  Getting Started
-
-### Prerequisites
-- A C++ compiler that supports **C++11 or newer** (e.g., GCC/g++).  
-- The **Delhi GTFS dataset**, available [here](https://mobilitydatabase.org/feeds/gtfs/mdb-1262).  
-
-### Installation & Execution
-
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/kwant-dbg/ChronoPath.git
-   cd TemporalPathfinder01
-sh
-
-2. **Set up the data:**
-
-   * Create a directory named `data` in the project root.
-   * Download the GTFS files (`stops.txt`, `stop_times.txt`, `trips.txt`, etc.) and place them inside the `data` folder.
-
-3. **Compile the source code:**
-
-   ```sh
-   g++ Sources/main.cpp Sources/Raptor.cpp -o pathfinder -IHeaders -std=c++11 -pthread
-   ```
-
-4. **Run the application:**
-
-   ```sh
-   ./pathfinder
-   ```
-
-   You should see:
-
-   ```
-   Server starting on http://localhost:8080
-   ```
-
-5. **Access the web interface:**
-   Open your browser and go to  **[http://localhost:8080](http://localhost:8080)**
-
----
-
-##  Project Structure
+### Structure
 
 ```
-TemporalPathfinder/
+ChronoPath/
 ├── Headers/
-│   ├── DataTypes.h     # Defines data structures (Stop, Route, etc.)
-│   ├── httplib.h       # Single-file C++ HTTP/HTTPS library
-│   └── Raptor.h        # Header for the RAPTOR algorithm
+│   ├── DataTypes.h
+│   ├── httplib.h
+│   └── Raptor.h
 └── Sources/
-    ├── main.cpp        # Main application entry point and web server logic
-    └── Raptor.cpp      # Implementation of the RAPTOR algorithm
+    ├── main.cpp
+    └── Raptor.cpp
 ```
 <img width="800" height="450" alt="Raptor(2)" src="https://github.com/user-attachments/assets/cc5a5844-d792-4f74-8ba5-efacd702a576" />
