@@ -50,7 +50,7 @@ Unlike classic graph-based algorithms (like Dijkstra's), RAPTOR is **tailored fo
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/L0calised/TemporalPathfinder01.git
+   git clone https://github.com/kwant-dbg/ChronoPath.git
    cd TemporalPathfinder01
 sh
 
